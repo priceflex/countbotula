@@ -4,7 +4,8 @@ require 'csv'
 require 'googlecharts'
 
 puts "Enter Client Name:"
-client_name = gets
+client_name = $stdin.gets
+puts client_name
 current_time = Time.now.strftime("%m-%d-%Y")
 
 
@@ -29,27 +30,50 @@ current_time = Time.now.strftime("%m-%d-%Y")
   dirty_computer = unique_computers.map {|computer| {computer => blocked_dns.count(computer)}}
 
   # This will save to file
-  # CSV.open("#{client_name}-#{current_time}.csv", 'w') do |csv_object|
-  #     csv_object << dirty_computer.map{|computer| computer.keys.first}
-  #     csv_object << dirty_computer.map{|computer| computer.values.first}
-  #   end
+  name  = "#{client_name.to_sym}"
+  file_name = "#{name}-#{current_time.to_s}.csv"
+  CSV.open(file_name, 'w') do |csv_object|
+      csv_object << dirty_computer.map{|computer| computer.keys.first}
+      csv_object << dirty_computer.map{|computer| computer.values.first}
+    end
 
   ap dirty_computer
-  ap dirty_computer.map{|computer| [computer.values.first]}
+  ap dirty_computer.map{|computer| computer.values.first}
+  ap dirty_computer.map{|computer| computer.keys.first}
   ap dirty_computer.map{|computer| [computer.keys.first]}
+  
+  def create_random_color
+    color = ""
+    6.times do 
+      if  [true, false].sample
+        color << rand(10).to_s
+      else
+        color << ("a".."f").to_a.sample
+      end
+    end
+    return color
+  end
+  
+  def random_colors(colors=1)
+    color_array = []
+    colors.times do
+      color_array << create_random_color
+    end
+    return color_array
+  end
   
 
   chart = Gchart.new( :type => 'bar',
-                      :title => "#{client_name} - Number of Blocked Malware Requests #{current_time}",
+                      :title => "Blocked Malware Requests #{current_time}",
                       :theme => :keynote,
-                      :data => dirty_computer.map{|computer| computer.values.first}, 
-                      :line_colors => 'e0440e,e62ae5,287eec',
-                      :legend => dirty_computer.map{|computer| [computer.keys.first]},
-                      :labels => dirty_computer.map{|computer| [computer.keys.first]},
-                      :axis_with_labels => ['x', 'y'], 
-  					          :stacked => false,
+                      :data => dirty_computer.map{|computer| [computer.values.first]}, 
+                      :line_colors => random_colors(dirty_computer.size),
+                      :legend => dirty_computer.map{|computer| computer.keys.first},
+                      # :label => dirty_computer.map{|computer| computer.key.first},
+                      # :axis_with_labels => ['y'], 
+                      :stacked => false,
                       :filename => "chart.png",
-                      :size => "700x500")
+                      :size => "500x500")
                       
   # Record file in filesystem
   chart.file
