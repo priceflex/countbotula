@@ -5,7 +5,7 @@ require 'googlecharts'
 
 puts "Enter Client Name:"
 client_name = $stdin.gets
-puts client_name
+ap client_name
 current_time = Time.now.strftime("%m-%d-%Y")
 
 
@@ -30,8 +30,13 @@ current_time = Time.now.strftime("%m-%d-%Y")
   dirty_computer = unique_computers.map {|computer| {computer => blocked_dns.count(computer)}}
 
   # This will save to file
-  name  = "#{client_name.to_sym}"
+  # This removes the next line char
+  name  = "#{client_name.chomp}"
+  
+  # This creates the full file name
   file_name = "#{name}-#{current_time.to_s}.csv"
+  
+  #This saves the file
   CSV.open(file_name, 'w') do |csv_object|
       csv_object << dirty_computer.map{|computer| computer.keys.first}
       csv_object << dirty_computer.map{|computer| computer.values.first}
