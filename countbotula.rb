@@ -34,10 +34,10 @@ current_time = Time.now.strftime("%m-%d-%Y")
   name  = "#{client_name.chomp}"
   
   # This creates the full file name
-  file_name = "#{name}-#{current_time.to_s}.csv"
+  file_name = "#{name} #{current_time}"
   
   #This saves the file
-  CSV.open(file_name, 'w') do |csv_object|
+  CSV.open("#{file_name}.csv", 'w') do |csv_object|
       csv_object << dirty_computer.map{|computer| computer.keys.first}
       csv_object << dirty_computer.map{|computer| computer.values.first}
     end
@@ -77,8 +77,9 @@ current_time = Time.now.strftime("%m-%d-%Y")
                       # :label => dirty_computer.map{|computer| computer.key.first},
                       # :axis_with_labels => ['y'], 
                       :stacked => false,
-                      :filename => "chart.png",
-                      :size => "500x500")
+                      :filename => "#{file_name}.png",
+                      :size => "500x500"
+                      )
                       
   # Record file in filesystem
   chart.file
